@@ -1,0 +1,18 @@
+version: "3.3"
+
+volumes:
+    diabetes-tc2:
+
+services:
+    postgresql:
+        container_name: psql-diabetes-tc2
+        image: postgres
+        restart: always
+        volumes:
+            - diabetes-tc2:/var/lib/postgresql/data
+        ports:
+            - "15432:5432"
+        environment:
+            - POSTGRES_PASSWORD=admin_diabetes
+            - POSTGRES_USER=admin_diabetes
+            - POSTGRES_DB=application

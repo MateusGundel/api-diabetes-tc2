@@ -10,16 +10,17 @@ from app.api import deps
 from app.core import security
 from app.core.config import settings
 from app.schemas.token import Token
+from app.schemas.user import UserLogin
 
 router = APIRouter()
 
 log = logging.getLogger(__name__)
 
 
-@router.post("/access-token", response_model=Token)
-async def login_for_access_token(db: Session = Depends(deps.get_db), form_data: OAuth2PasswordRequestForm = Depends()):
+@router.post("/", response_model=Token)
+async def login(*, db: Session = Depends(deps.get_db), user_in: UserLogin):
     user = crud.user.authenticate(
-        db, email=form_data.username, password=form_data.password
+        db, email=user_in.username, password=user_in.password
     )
     if not user:
         raise HTTPException(

@@ -8,18 +8,27 @@ class UserBase(BaseModel):
     is_superuser: bool = False
     full_name: Optional[str] = None
 
+
 class UserCreate(UserBase):
     email: EmailStr
     password: str
 
+
 class UserInDB(UserBase):
     hashed_password: str
+
 
 class UserUpdate(UserBase):
     password: Optional[str] = None
 
+
 class User(UserBase):
     id: Optional[int] = None
-    
+
     class Config:
         orm_mode = True
+
+
+class UserLogin(BaseModel):
+    username: Optional[str]
+    password: Optional[str]

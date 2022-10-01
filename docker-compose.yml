@@ -3,9 +3,10 @@ version: '3.8'
 services:
   api:
     build: .
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0'
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; uvicorn app.main:app --host 0.0.0.0 --log-config /app/log.ini'
     volumes:
       - .:/app
+      - /flask:/flask
     ports:
       - "8008:8000"
     environment:
@@ -19,7 +20,7 @@ services:
     expose:
       - 5432
     ports:
-      - "15432:5432"
+      - "5432:5432"
     environment:
       - POSTGRES_USER=admin_diabetes
       - POSTGRES_PASSWORD=admin_diabetes

@@ -7,8 +7,9 @@ services:
             dockerfile: Dockerfile.prod
         volumes:
             - .:/app
+            - /flask:/flask
         ports:
-            - "8009:80"
+            - "80:80"
         environment:
             - SQLALCHEMY_DATABASE_URI=postgresql://admin_diabetes:admin_diabetes@db:5432/application
         depends_on:

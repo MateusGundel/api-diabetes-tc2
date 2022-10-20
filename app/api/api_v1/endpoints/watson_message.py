@@ -1,26 +1,36 @@
+import logging
+
 from fastapi import Depends, APIRouter
-from sqlalchemy.orm import Session
 
 from app.api import deps
-from app.api.deps import get_current_active_user
 from app.core.watson import WatsonMessage
-from app.schemas import User
-from app.schemas.watson_message import SessionId
+from app.schemas.watson_message import Session, MessageResponse, MessageInput
+
+log = logging.getLogger(__name__)
 
 router = APIRouter()
 
 
-@router.post('/session', response_model=SessionId)
-async def get_session(db: Session = Depends(deps.get_db),
-                      current_user: User = Depends(get_current_active_user)
-                      ):
+@router.get('/session', response_model=Session)
+async def get_session(db: Session = Depends(deps.get_db)):
     session_id = WatsonMessage().create_session()
-    return {"session_id": session_id}
+    return {"session": session_id}
 
 
-@router.post('/message', response_model=SessionId)
-async def message(db: Session = Depends(deps.get_db),
-                  current_user: User = Depends(get_current_active_user)
-                  ):
-    session_id = WatsonMessage().create_session()
-    return {"session_id": session_id}
+@router.post('/message', response_model=list[MessageResponse])
+async def message(data: MessageInput, db: Session = Depends(deps.get_db)):
+    response = WatsonMessage().send_message(data.session, data.message)
+    log.info(response)
+    messages = []
+
+    for i in response.get('output').get('generic'):
+        if i.get('response_type') and i.get('text'):
+            detail = {"type": "text", "response": i.get('text')}
+            messages.append({"response": detail})
+        if i.get('options'):
+            for option in i.get('options'):
+                detail = {"type": "text", "response": option.get('label')}
+                messages.append({"response": detail})
+
+    log.info(messages)
+    return messages

@@ -16,17 +16,23 @@ class WatsonMessage:
     assistant_id: str = None
 
     def __init__(self) -> None:
-        authenticator = IAMAuthenticator(apikey=Settings.WATSON_API_KEY)
-        self.assistant = AssistantV2(version=Settings.WATSON_VERSION, authenticator=authenticator)
-        self.assistant_id = Settings.WATSON_ASSISTANT_ID
+        settings = Settings()
+        log.info(f"watsion api key {settings.WATSON_API_KEY}")
+        log.info(f"watsion version {settings.WATSON_VERSION}")
+        log.info(f"watsion assistant ID {settings.WATSON_ASSISTANT_ID}")
+        authenticator = IAMAuthenticator(apikey=settings.WATSON_API_KEY)
+        self.assistant = AssistantV2(version=settings.WATSON_VERSION, authenticator=authenticator)
+        self.assistant.set_service_url('https://api.au-syd.assistant.watson.cloud.ibm.com')
+        self.assistant.set_disable_ssl_verification(True)
+        self.assistant_id = settings.WATSON_ASSISTANT_ID
 
-    def create_session(self) -> Optional[str, None]:
+    def create_session(self) -> str:
         try:
             response = self.assistant.create_session(assistant_id=self.assistant_id).get_result()
             return response.get('session_id')
         except Exception as e:
-            log.error(f"Erro ao criar sessão pasa o assistant_id {self.assistant_id} - {e}")
-        return None
+            log.error(f"Erro ao criar sessão para o assistant_id {self.assistant_id} - {e}")
+        return ""
 
     def delete_session(self, session_id: str) -> None:
         try:
@@ -37,6 +43,8 @@ class WatsonMessage:
             log.error(f"Erro ao excluir sessão {session_id} - {e}")
 
     def send_message(self, session_id: str, text: str) -> Response:
+        log.info(session_id)
+        log.info(text)
         message_input = MessageInput(message_type='text', text=text)
         return self.assistant.message(
             assistant_id=self.assistant_id,

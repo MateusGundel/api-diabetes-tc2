@@ -15,3 +15,11 @@ async def alguma_coisa(db: Session = Depends(deps.get_db),
                        ):
     users = crud.user.get_multi(db, skip=0, limit=100)
     return {"message": users, "text": "Lorem ipsun aquela coisa chata"}
+
+class Teste:
+    def teste1(self):
+        pass
+
+class Teste2(Teste):
+    def teste1(self):
+        super().teste1()

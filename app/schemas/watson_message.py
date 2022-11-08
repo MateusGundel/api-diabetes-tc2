@@ -13,7 +13,10 @@ class MessageInfo(BaseModel):
 
 
 class MessageResponse(BaseModel):
-    response: MessageInfo
+    message: str
+    type: str
+    options: list = None
+
 
 class MessageInput(BaseModel):
     session: str

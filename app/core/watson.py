@@ -43,6 +43,9 @@ class WatsonMessage:
             log.error(f"Erro ao excluir sessão {session_id} - {e}")
 
     def send_message(self, session_id: str, text: str) -> Response:
+        """
+        TEstes :????
+        """
         log.info(session_id)
         log.info(text)
         message_input = MessageInput(message_type='text', text=text)

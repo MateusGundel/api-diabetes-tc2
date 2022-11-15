@@ -25,8 +25,10 @@ async def message(data: MessageInput, db: Session = Depends(deps.get_db)):
     for i in response.get('output').get('generic'):
         log.info(i)
         message_dict = {}
-        if i.get('response_type') and i.get('text'):
+        if i.get('response_type') == "text" and i.get('text'):
             message_dict.update({'message': i.get('text'), 'type': 'doris'})
+        if i.get('response_type') == "image" and i.get('source'):
+            message_dict.update({'message': i.get('source'), 'type': 'doris-image'})
         if i.get('options'):
             options = []
             for option in i.get('options'):

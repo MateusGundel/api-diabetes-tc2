@@ -23,7 +23,6 @@ async def message(data: MessageInput, db: Session = Depends(deps.get_db)):
     messages_responses = []
     response = WatsonMessage().send_message(data.session, data.message)
     for i in response.get('output').get('generic'):
-        log.info(i)
         message_dict = {}
         if i.get('response_type') == "text" and i.get('text'):
             message_dict.update({'message': i.get('text'), 'type': 'doris'})

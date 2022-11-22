@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
 
     SECRET_KEY: str = None
-    SQLALCHEMY_DATABASE_URI: str = None
+    DATABASE_URL: str = None
 
     MAIL_USERNAME: str = None
     MAIL_PASSWORD: str = None

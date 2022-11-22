@@ -14,7 +14,7 @@ router = APIRouter()
 @router.get('/session', response_model=Session)
 async def get_session(db: Session = Depends(deps.get_db)):
     session_id = WatsonMessage().create_session()
-    #session_id = "????"
+    # session_id = "????"
     return {"session": session_id}
 
 
@@ -25,7 +25,10 @@ async def message(data: MessageInput, db: Session = Depends(deps.get_db)):
     for i in response.get('output').get('generic'):
         message_dict = {}
         if i.get('response_type') == "text" and i.get('text'):
-            message_dict.update({'message': i.get('text'), 'type': 'doris'})
+            text = i.get('text') or ""
+            text = text.replace('\n\n', '\n')
+            text = text.replace('<br />', '\n')
+            message_dict.update({'message': text, 'type': 'doris'})
         if i.get('response_type') == "image" and i.get('source'):
             message_dict.update({'message': i.get('source'), 'type': 'doris-image'})
         if i.get('options'):

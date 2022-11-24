@@ -16,6 +16,7 @@ class MessageResponse(BaseModel):
     message: str
     type: str
     options: list = None
+    audio: str = None
 
 
 class MessageInput(BaseModel):

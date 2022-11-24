@@ -1,9 +1,11 @@
+import base64
 import logging
+from io import BytesIO
 
 from fastapi import Depends, APIRouter
-
+from fastapi.responses import StreamingResponse
 from app.api import deps
-from app.core.watson import WatsonMessage
+from app.core.watson import WatsonMessage, WatsonTextToSpeech
 from app.schemas.watson_message import Session, MessageResponse, MessageInput
 
 log = logging.getLogger(__name__)
@@ -22,13 +24,15 @@ async def get_session(db: Session = Depends(deps.get_db)):
 async def message(data: MessageInput, db: Session = Depends(deps.get_db)):
     messages_responses = []
     response = WatsonMessage().send_message(data.session, data.message)
+    wttp = WatsonTextToSpeech()
     for i in response.get('output').get('generic'):
         message_dict = {}
         if i.get('response_type') == "text" and i.get('text'):
             text = i.get('text') or ""
             text = text.replace('\n\n', '\n')
             text = text.replace('<br />', '\n')
-            message_dict.update({'message': text, 'type': 'doris'})
+            audio = base64.b64encode(wttp.get_audio(text))
+            message_dict.update({'message': text, 'type': 'doris', "audio": audio})
         if i.get('response_type') == "image" and i.get('source'):
             message_dict.update({'message': i.get('source'), 'type': 'doris-image'})
         if i.get('options'):
@@ -39,6 +43,6 @@ async def message(data: MessageInput, db: Session = Depends(deps.get_db)):
                 messages_responses[-1].update({'options': options})
         if message_dict:
             messages_responses.append(message_dict)
-    log.info(messages_responses)
+    # log.info(messages_responses)
 
     return messages_responses

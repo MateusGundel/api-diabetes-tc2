@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     TEXT_SPEECH_API_KEY: str = None
     TEXT_SPEECH_URL: str = None
 
+    TEXT_TO_SPEECH_ENGINE: str = "aws"
     class Config:
         env_file = '.env'
 

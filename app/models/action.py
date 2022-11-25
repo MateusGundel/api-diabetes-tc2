@@ -10,4 +10,4 @@ class Action(Base):
     user_hash = Column(String)
     value = Column(String)
     type = Column(String)
-    data = Column(DateTime, default=datetime.now())
+    data = Column(DateTime)

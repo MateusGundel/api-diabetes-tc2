@@ -8,7 +8,6 @@ class ActionBase(BaseModel):
     user_hash: str = None
     value: str = None
     type: str = None
-    data: datetime = None
 
 
 class CreateAction(ActionBase):
@@ -25,6 +24,7 @@ class UpdateAction(ActionBase):
 
 class Action(ActionBase):
     id: int
+    data: datetime
 
     class Config:
         orm_mode = True

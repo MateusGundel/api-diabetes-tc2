@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     WATSON_VERSION: str = None
     WATSON_ASSISTANT_ID: str = None
 
+    TEXT_SPEECH_API_KEY: str = None
+    TEXT_SPEECH_URL: str = None
+
     class Config:
         env_file = '.env'
 

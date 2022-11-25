@@ -2,7 +2,7 @@ import logging
 from typing import Optional
 
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
-from ibm_watson import AssistantV2
+from ibm_watson import AssistantV2, TextToSpeechV1
 from ibm_watson.assistant_v2 import MessageInput
 from requests import Response
 
@@ -53,3 +53,27 @@ class WatsonMessage:
             assistant_id=self.assistant_id,
             session_id=session_id,
             input=message_input).get_result()
+
+
+class WatsonTextToSpeech:
+    text_to_speech = None
+    voice = 'pt-BR_IsabelaV3Voice'
+
+    def __init__(self) -> None:
+        settings = Settings()
+        authenticator = IAMAuthenticator(settings.TEXT_SPEECH_API_KEY)
+        self.text_to_speech = TextToSpeechV1(
+            authenticator=authenticator
+        )
+        self.text_to_speech.set_service_url(settings.TEXT_SPEECH_URL)
+        self.text_to_speech.set_disable_ssl_verification(True)
+
+    def get_audio(self, text):
+        audio = self.text_to_speech.synthesize(
+            text,
+            voice=self.voice,
+            accept='audio/wav'
+        ).get_result().content
+        # log.info(type(audio))
+        # log.info(audio)
+        return audio

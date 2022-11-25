@@ -74,6 +74,4 @@ class WatsonTextToSpeech:
             voice=self.voice,
             accept='audio/wav'
         ).get_result().content
-        # log.info(type(audio))
-        # log.info(audio)
         return audio

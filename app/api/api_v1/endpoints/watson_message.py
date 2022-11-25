@@ -5,6 +5,8 @@ from io import BytesIO
 from fastapi import Depends, APIRouter
 from fastapi.responses import StreamingResponse
 from app.api import deps
+from app.core import config
+from app.core.amazon import PollySpeech
 from app.core.watson import WatsonMessage, WatsonTextToSpeech
 from app.schemas.watson_message import Session, MessageResponse, MessageInput
 
@@ -31,7 +33,10 @@ async def message(data: MessageInput, db: Session = Depends(deps.get_db)):
             text = i.get('text') or ""
             text = text.replace('\n\n', '\n')
             text = text.replace('<br />', '\n')
-            audio = base64.b64encode(wttp.get_audio(text))
+            if config.settings.TEXT_TO_SPEECH_ENGINE == "aws":
+                audio = base64.b64encode(PollySpeech().get_audio(text))
+            else:
+                audio = base64.b64encode(wttp.get_audio(text))
             message_dict.update({'message': text, 'type': 'doris', "audio": audio})
         if i.get('response_type') == "image" and i.get('source'):
             message_dict.update({'message': i.get('source'), 'type': 'doris-image'})
